@@ -26,9 +26,16 @@ server.on('request', (req, res) => {
     return;
   }
 
-  fs.unlinkSync(filepath);
-  res.statusCode = 200;
-  res.end('Success! File was deleted');
+  fs.unlink(filepath, (err) => {
+    if (err) {
+      console.log(err);
+      res.end(`Something went wrong! Can't delete file`);
+    }
+
+    res.statusCode = 200;
+    res.end('Success! File was deleted');
+  });
+
 
   switch (req.method) {
     case 'DELETE':

@@ -34,15 +34,26 @@ server.on('request', (req, res) => {
   });
 
   const streamWithLimitErrorCb = () => {
-    fs.unlinkSync(filepath);
+    fs.unlink(filepath, (err) => {
+      if (err) {
+        console.log(err);
+        res.statusCode = 500;
+        res.end(`Something went wrong! Can't delete file`);
+      }
 
-    res.statusCode = 413;
-    res.end('Maximum file size is 1mb');
+      res.statusCode = 413;
+      res.end('Maximum file size is 1mb');
+    });
   };
 
   const onRequestAbortedCb = () => {
     writeFileStream.destroy();
-    fs.unlinkSync(filepath);
+    fs.unlink(filepath, (err) => {
+      if (err) {
+        console.log(err);
+        res.end(`Something went wrong! Can't delete file`);
+      };
+    });
   };
 
   const onStreamFinishCb = () => {
