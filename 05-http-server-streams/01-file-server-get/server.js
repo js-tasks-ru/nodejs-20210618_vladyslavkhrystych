@@ -18,9 +18,7 @@ server.on('request', (req, res) => {
 
   const fileStream = fs.createReadStream(filepath);
 
-  fileStream.on('data', (chunk) => {
-    res.write(chunk);
-  });
+  fileStream.pipe(res);
 
   fileStream.on('error', () => {
     res.statusCode = 404;
