@@ -6,25 +6,30 @@ module.exports = async function authenticate(
   displayName,
   done
 ) {
-  if (!email) {
-    return done(null, false, 'Не указан email');
-  }
+  try {
+    if (!email) {
+      return done(null, false, 'Не указан email');
+    }
 
-  const user = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-  if (!user) {
-    const newUser = {
-      email,
-      displayName,
-    };
-    User.create(newUser, (err, createdUser) => {
-      if (err) {
+    if (!user) {
+      const newUser = {
+        email,
+        displayName,
+      };
+
+      try {
+        const createdUser = await User.create(newUser);
+
+        return done(null, createdUser);
+      } catch (err) {
         return done(err, false, 'Некорректный email.');
       }
+    }
 
-      return done(null, createdUser);
-    });
+    done(null, user);
+  } catch (err) {
+    done(err);
   }
-
-  done(null, user);
 };
